@@ -3,6 +3,7 @@ import docx
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from difflib import SequenceMatcher
+from io import BytesIO
 
 # Function to read text from a Word document
 def read_docx(file):
@@ -10,7 +11,7 @@ def read_docx(file):
     full_text = []
     for para in doc.paragraphs:
         full_text.append(para.text)
-    return '\n'.join(full_text)
+    return doc, '\n'.join(full_text)
 
 # Function to split text into sentences by new lines
 def split_into_sentences(text):
@@ -48,6 +49,24 @@ def compare_sentences(sentences1, sentences2, threshold=0.85):
             new_sentences.append(sent2)
 
     return sorted(new_sentences), sorted(deleted_sentences), sorted(slightly_changed_sentences), sorted(common_sentences)
+
+# Function to highlight sentences in a Word document
+def highlight_sentences(doc, sentences_to_highlight):
+    for para in doc.paragraphs:
+        for sentence in sentences_to_highlight:
+            if sentence in para.text:
+                # Apply highlight to the paragraph containing the sentence
+                for run in para.runs:
+                    if sentence in run.text:
+                        run.font.highlight_color = docx.shared.RGBColor(255, 255, 0)  # Yellow highlight
+    return doc
+
+# Function to save a document to a BytesIO object
+def save_docx(doc):
+    buffer = BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+    return buffer
 
 # Function to calculate cosine similarity between two texts with n-grams and optional length penalty
 def calculate_similarity(text1, text2, ngram_range=(1, 3), apply_length_penalty=True):
@@ -93,8 +112,8 @@ apply_length_penalty = st.sidebar.checkbox("Apply length penalty", value=True)
 # Process the files and display the results
 if file1 and file2:
     # Read the contents of both documents
-    text1 = read_docx(file1)
-    text2 = read_docx(file2)
+    doc1, text1 = read_docx(file1)
+    doc2, text2 = read_docx(file2)
 
     # Display word counts
     st.write(f"Number of words in file 1: {word_count(text1)}")
@@ -141,6 +160,31 @@ if file1 and file2:
     with tab4:
         st.subheader("Common Sentences (in both files):")
         st.write("\n".join(common_sentences) if common_sentences else "No common sentences.")
+
+    # Highlight and save different versions of the documents
+    highlighted_new = highlight_sentences(doc2, new_sentences)
+    highlighted_deleted = highlight_sentences(doc1, deleted_sentences)
+    highlighted_modified = highlight_sentences(doc2, [changed for _, changed in slightly_changed_sentences])
+    highlighted_common = highlight_sentences(doc2, common_sentences)
+
+    # Download buttons for the four versions
+    st.subheader("Download Highlighted Versions")
+    
+    # New Sentences Highlighted
+    buffer_new = save_docx(highlighted_new)
+    st.download_button(label="Download Second File with New Sentences Highlighted", data=buffer_new, file_name="new_sentences_highlighted.docx")
+
+    # Deleted Sentences Highlighted
+    buffer_deleted = save_docx(highlighted_deleted)
+    st.download_button(label="Download First File with Deleted Sentences Highlighted", data=buffer_deleted, file_name="deleted_sentences_highlighted.docx")
+
+    # Slightly Changed Sentences Highlighted
+    buffer_modified = save_docx(highlighted_modified)
+    st.download_button(label="Download Second File with Modified Sentences Highlighted", data=buffer_modified, file_name="modified_sentences_highlighted.docx")
+
+    # Common Sentences Highlighted
+    buffer_common = save_docx(highlighted_common)
+    st.download_button(label="Download Second File with Common Sentences Highlighted", data=buffer_common, file_name="common_sentences_highlighted.docx")
 
 else:
     st.warning("Please upload both Word files to perform the comparison.")
