@@ -113,18 +113,24 @@ if file1 and file2:
     # Compare the sentences
     new_sentences, deleted_sentences, slightly_changed_sentences, common_sentences = compare_sentences(sentences1, sentences2)
 
-    # Calculate total number of sentences for percentage calculation
-    total_sentences = len(sentences1) + len(sentences2)
-    
+    # Calculate counts for percentages
+    total_new = len(new_sentences)
+    total_deleted = len(deleted_sentences)
+    total_changed = len(slightly_changed_sentences)
+    total_common = len(common_sentences)
+
+    # Total sentences considered for percentage calculation
+    total_sentences = total_new + total_deleted + total_changed + total_common
+
     # Avoid division by zero
     if total_sentences == 0:
         total_sentences = 1
 
     # Calculate percentages for each category
-    new_percentage = (len(new_sentences) / total_sentences) * 100
-    deleted_percentage = (len(deleted_sentences) / total_sentences) * 100
-    updated_percentage = (len(slightly_changed_sentences) / total_sentences) * 100
-    common_percentage = (len(common_sentences) / total_sentences) * 100
+    new_percentage = (total_new / total_sentences) * 100
+    deleted_percentage = (total_deleted / total_sentences) * 100
+    updated_percentage = (total_changed / total_sentences) * 100
+    common_percentage = (total_common / total_sentences) * 100
 
     # Display the percentages
     st.subheader("Breakdown of Sentence Changes:")
