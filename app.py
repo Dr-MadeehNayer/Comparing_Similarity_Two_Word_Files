@@ -113,24 +113,34 @@ if file1 and file2:
     # Compare the sentences
     new_sentences, deleted_sentences, slightly_changed_sentences, common_sentences = compare_sentences(sentences1, sentences2)
 
-    # Display categorized sentences
-    st.subheader("New Sentences (in second file but not in the first):")
-    st.write("\n".join(new_sentences) if new_sentences else "No new sentences.")
+    # Create tabs for each section
+    tab1, tab2, tab3, tab4 = st.tabs(["New Sentences", "Deleted Sentences", "Slightly Changed Sentences", "Common Sentences"])
 
-    st.subheader("Deleted Sentences (in first file but not in the second):")
-    st.write("\n".join(deleted_sentences) if deleted_sentences else "No deleted sentences.")
+    # Tab 1: New sentences
+    with tab1:
+        st.subheader("New Sentences (in second file but not in the first):")
+        st.write("\n".join(new_sentences) if new_sentences else "No new sentences.")
 
-    st.subheader("Slightly Changed Sentences:")
-    if slightly_changed_sentences:
-        for original, changed in slightly_changed_sentences:
-            st.write(f"Original: {original}")
-            st.write(f"Changed: {changed}")
-            st.write("---")
-    else:
-        st.write("No slightly changed sentences.")
+    # Tab 2: Deleted sentences
+    with tab2:
+        st.subheader("Deleted Sentences (in first file but not in the second):")
+        st.write("\n".join(deleted_sentences) if deleted_sentences else "No deleted sentences.")
 
-    st.subheader("Common Sentences (in both files):")
-    st.write("\n".join(common_sentences) if common_sentences else "No common sentences.")
+    # Tab 3: Slightly changed sentences
+    with tab3:
+        st.subheader("Slightly Changed Sentences:")
+        if slightly_changed_sentences:
+            for original, changed in slightly_changed_sentences:
+                st.write(f"Original: {original}")
+                st.write(f"Changed: {changed}")
+                st.write("---")
+        else:
+            st.write("No slightly changed sentences.")
+
+    # Tab 4: Common sentences
+    with tab4:
+        st.subheader("Common Sentences (in both files):")
+        st.write("\n".join(common_sentences) if common_sentences else "No common sentences.")
 
 else:
     st.warning("Please upload both Word files to perform the comparison.")
