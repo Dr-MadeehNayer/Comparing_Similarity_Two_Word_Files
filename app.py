@@ -75,7 +75,7 @@ def word_count(text):
     return len(text.split())
 
 # Streamlit interface
-st.title("Document Similarity Checker")
+st.title("IPA - Document Similarity Checker")
 st.write("Upload two MS Word documents (.docx) to compare their similarity.")
 
 # File uploader for two documents
