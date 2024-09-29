@@ -12,9 +12,9 @@ def read_docx(file):
         full_text.append(para.text)
     return '\n'.join(full_text)
 
-# Function to split text into sentences (we assume simple period-based splitting)
+# Function to split text into sentences by new lines
 def split_into_sentences(text):
-    return [sentence.strip() for sentence in text.split('.') if sentence.strip()]
+    return [sentence.strip() for sentence in text.split('\n') if sentence.strip()]
 
 # Function to calculate similarity between two sentences
 def sentence_similarity(sent1, sent2, threshold=0.85):
