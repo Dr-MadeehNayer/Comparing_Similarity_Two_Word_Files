@@ -75,27 +75,20 @@ def word_count(text):
     return len(text.split())
 
 # Streamlit interface
-st.title("فاحص تشابه المستندات")
-st.write("قم بتحميل ملفين MS Word (.docx) للمقارنة بينهما.")
-
-# Custom CSS to right-align the tabs
-st.markdown("""
-    <style>
-    .css-1uixwzi.e1fqkh3o3 { justify-content: flex-end; } /* Right-align the tabs */
-    </style>
-""", unsafe_allow_html=True)
+st.title("IPA - Document Similarity Checker")
+st.write("Upload two MS Word documents (.docx) to compare their similarity.")
 
 # File uploader for two documents
-file1 = st.file_uploader("اختر الملف الأول", type="docx")
-file2 = st.file_uploader("اختر الملف الثاني", type="docx")
+file1 = st.file_uploader("Choose the first Word file", type="docx")
+file2 = st.file_uploader("Choose the second Word file", type="docx")
 
 # Allow users to select the n-gram range
-st.sidebar.header("إعدادات النماذج اللغوية")
-min_gram = st.sidebar.number_input("النموذج اللغوي الأدنى (Minimum n-gram)", min_value=1, max_value=5, value=1)
-max_gram = st.sidebar.number_input("النموذج اللغوي الأقصى (Maximum n-gram)", min_value=1, max_value=5, value=3)
+st.sidebar.header("N-Gram Settings")
+min_gram = st.sidebar.number_input("Minimum n-gram", min_value=1, max_value=5, value=1)
+max_gram = st.sidebar.number_input("Maximum n-gram", min_value=1, max_value=5, value=3)
 
 # Checkbox to apply or ignore length penalty
-apply_length_penalty = st.sidebar.checkbox("تطبيق عقوبة طول المستند", value=True)
+apply_length_penalty = st.sidebar.checkbox("Apply length penalty", value=True)
 
 # Process the files and display the results
 if file1 and file2:
@@ -104,14 +97,14 @@ if file1 and file2:
     text2 = read_docx(file2)
 
     # Display word counts
-    st.write(f"عدد الكلمات في الملف الأول: {word_count(text1)}")
-    st.write(f"عدد الكلمات في الملف الثاني: {word_count(text2)}")
+    st.write(f"Number of words in file 1: {word_count(text1)}")
+    st.write(f"Number of words in file 2: {word_count(text2)}")
 
     # Calculate similarity with the specified n-gram range and optional length penalty
     similarity_percentage = calculate_similarity(text1, text2, ngram_range=(min_gram, max_gram), apply_length_penalty=apply_length_penalty)
 
     # Display similarity percentage
-    st.subheader(f"نسبة التشابه: {similarity_percentage:.2f}%")
+    st.subheader(f"Similarity percentage: {similarity_percentage:.2f}%")
 
     # Split both documents into sentences
     sentences1 = split_into_sentences(text1)
@@ -120,34 +113,34 @@ if file1 and file2:
     # Compare the sentences
     new_sentences, deleted_sentences, slightly_changed_sentences, common_sentences = compare_sentences(sentences1, sentences2)
 
-    # Create tabs for each section (in Arabic)
-    tab1, tab2, tab3, tab4 = st.tabs(["الجمل الجديدة", "الجمل المحذوفة", "الجمل المتغيرة", "الجمل المشتركة"])
+    # Create tabs for each section
+    tab1, tab2, tab3, tab4 = st.tabs(["New Sentences", "Deleted Sentences", "Slightly Changed Sentences", "Common Sentences"])
 
     # Tab 1: New sentences
     with tab1:
-        st.subheader("الجمل الجديدة (في الملف الثاني ولكن ليست في الأول):")
-        st.write("\n".join(new_sentences) if new_sentences else "لا توجد جمل جديدة.")
+        st.subheader("New Sentences (in second file but not in the first):")
+        st.write("\n".join(new_sentences) if new_sentences else "No new sentences.")
 
     # Tab 2: Deleted sentences
     with tab2:
-        st.subheader("الجمل المحذوفة (في الملف الأول ولكن ليست في الثاني):")
-        st.write("\n".join(deleted_sentences) if deleted_sentences else "لا توجد جمل محذوفة.")
+        st.subheader("Deleted Sentences (in first file but not in the second):")
+        st.write("\n".join(deleted_sentences) if deleted_sentences else "No deleted sentences.")
 
     # Tab 3: Slightly changed sentences
     with tab3:
-        st.subheader("الجمل المتغيرة:")
+        st.subheader("Slightly Changed Sentences:")
         if slightly_changed_sentences:
             for original, changed in slightly_changed_sentences:
-                st.write(f"الأصلية: {original}")
-                st.write(f"المتغيرة: {changed}")
+                st.write(f"Original: {original}")
+                st.write(f"Changed: {changed}")
                 st.write("---")
         else:
-            st.write("لا توجد جمل متغيرة.")
+            st.write("No slightly changed sentences.")
 
     # Tab 4: Common sentences
     with tab4:
-        st.subheader("الجمل المشتركة (في كلا الملفين):")
-        st.write("\n".join(common_sentences) if common_sentences else "لا توجد جمل مشتركة.")
+        st.subheader("Common Sentences (in both files):")
+        st.write("\n".join(common_sentences) if common_sentences else "No common sentences.")
 
 else:
-    st.warning("يرجى تحميل كلا الملفين لإجراء المقارنة.")
+    st.warning("Please upload both Word files to perform the comparison.")
