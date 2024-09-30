@@ -115,6 +115,10 @@ max_gram = st.sidebar.number_input("Maximum n-gram", min_value=1, max_value=5, v
 # Checkbox to apply or ignore length penalty
 apply_length_penalty = st.sidebar.checkbox("Apply length penalty", value=True)
 
+# Footer
+st.markdown("<hr>", unsafe_allow_html=True)
+st.markdown('<p style="text-align: center; font-size: small;">This tool is developed by Dr. Madeeh Nayer</p>', unsafe_allow_html=True)
+
 
 # Process the files and display the results
 if file1 and file2:
@@ -178,6 +182,3 @@ if file1 and file2:
     with col2:
         st.subheader(f"{file1.name} (Right)")
         st.write('<div style="text-align: left; direction: rtl;">' + '<br>'.join(highlighted_text1) + '</div>', unsafe_allow_html=True)
-
-
-    st.write
