@@ -80,7 +80,7 @@ def highlight_sentence(text, color):
 
 # Streamlit interface
 st.title("IPA AI Use Cases")
-st.title("Tool One: Document Similarity Checker")
+st.title("Tool 1: MS Word Documents Similarity Detector")
 st.write("Upload two MS Word documents (.docx) to compare their similarity.")
 
 # File uploader for two documents
@@ -137,21 +137,11 @@ if file1 and file2:
     updated_percentage = (total_changed / total_sentences) * 100
     common_percentage = (total_common / total_sentences) * 100
 
-    # Display the percentages
-    # st.subheader("Breakdown of Sentence Changes:")
-    # st.write(f"New Sentences: {new_percentage:.2f}%")
-    # st.write(f"Deleted Sentences: {deleted_percentage:.2f}%")
-    # st.write(f"Updated Sentences: {updated_percentage:.2f}%")
-    # st.write(f"Common Sentences: {common_percentage:.2f}%")
-
     # Color legends
     st.write("### Color Legends:")
     st.write(f'<span style="color:red">Deleted Sentences</span> | '
              f'<span style="color:green">New Sentences</span> | '
              f'<span style="color:gold">Updated Sentences</span>', unsafe_allow_html=True)
-
-    # Create two columns for side-by-side comparison
-    col1, col2 = st.columns(2)
 
     # Prepare highlighted texts for both files
     highlighted_text1 = []
@@ -175,13 +165,24 @@ if file1 and file2:
             highlighted_text2.append(sent2)
 
     # Display file1 on the right and file2 on the left with dynamic filenames
-    with col1:
-        st.subheader(f"{file2.name} (Left)")
-        st.write('<div style="text-align: left; direction: rtl;">' + '<br>'.join(highlighted_text2) + '</div>', unsafe_allow_html=True)
+    st.write(f"<h4>{file1.name} (Right) | {file2.name} (Left)</h4>", unsafe_allow_html=True)
+    
+    # Create a table for horizontal alignment
+    st.write('<table style="width:100%; text-align:right; direction:rtl;">', unsafe_allow_html=True)
+    
+    # Align sentences row by row
+    for i in range(max(len(sentences1), len(sentences2))):
+        sent1 = highlighted_text1[i] if i < len(highlighted_text1) else ""
+        sent2 = highlighted_text2[i] if i < len(highlighted_text2) else ""
 
-    with col2:
-        st.subheader(f"{file1.name} (Right)")
-        st.write('<div style="text-align: left; direction: rtl;">' + '<br>'.join(highlighted_text1) + '</div>', unsafe_allow_html=True)
+        st.write(f'''
+            <tr>
+                <td style="padding: 10px;">{sent1}</td>
+                <td style="padding: 10px;">{sent2}</td>
+            </tr>
+        ''', unsafe_allow_html=True)
+    
+    st.write('</table>', unsafe_allow_html=True)
 
 else:
     st.warning("Please upload both Word files to perform the comparison.")
