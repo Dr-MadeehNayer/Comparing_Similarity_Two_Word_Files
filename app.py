@@ -94,7 +94,8 @@ def highlight_sentence(text, color):
 
 
 # Streamlit interface
-st.title("Document Similarity Checker")
+st.title("IPA AI Use Cases")
+st.title("Tool 1: MS Word Documents Similarity Calculator")
 st.write("Upload two MS Word documents (.docx) to compare their similarity.")
 
 # File uploader for two documents
@@ -103,10 +104,13 @@ file2 = st.file_uploader("Choose the second Word file", type="docx")
 
 # Allow users to select the n-gram range and similarity method
 st.sidebar.header("Settings")
-min_gram = st.sidebar.number_input("Minimum n-gram", min_value=1, max_value=5, value=1)
-max_gram = st.sidebar.number_input("Maximum n-gram", min_value=1, max_value=5, value=3)
+
 similarity_method = st.sidebar.selectbox(
     "Select similarity calculation method", ("Cosine", "Euclidean", "Jaccard"))
+
+min_gram = st.sidebar.number_input("Minimum n-gram", min_value=1, max_value=5, value=1)
+max_gram = st.sidebar.number_input("Maximum n-gram", min_value=1, max_value=5, value=3)
+
 
 # Checkbox to apply or ignore length penalty
 apply_length_penalty = st.sidebar.checkbox("Apply length penalty", value=True)
