@@ -96,7 +96,7 @@ def highlight_sentence(text, color):
 # Streamlit interface
 st.title("IPA AI Use Cases")
 st.title("Tool 1: MS Word Documents Similarity Calculator")
-st.write("Upload two MS Word documents (.docx) to compare their similarity.")
+st.write("Upload two MS Word documents (.docx) to calculate their similarity.")
 
 # File uploader for two documents
 file1 = st.file_uploader("Choose the first Word file", type="docx")
@@ -106,7 +106,7 @@ file2 = st.file_uploader("Choose the second Word file", type="docx")
 st.sidebar.header("Settings")
 
 similarity_method = st.sidebar.selectbox(
-    "Select similarity calculation method", ("Cosine", "Euclidean", "Jaccard"))
+    "Similarity calculation method", ("Cosine", "Euclidean", "Jaccard"))
 
 min_gram = st.sidebar.number_input("Minimum n-gram", min_value=1, max_value=5, value=1)
 max_gram = st.sidebar.number_input("Maximum n-gram", min_value=1, max_value=5, value=3)
