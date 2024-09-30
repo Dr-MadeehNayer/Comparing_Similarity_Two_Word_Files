@@ -74,6 +74,10 @@ def calculate_similarity(text1, text2, ngram_range=(1, 3), apply_length_penalty=
 def word_count(text):
     return len(text.split())
 
+# Function to highlight sentences with different colors for comparison
+def highlight_sentence(text, color):
+    return f'<span style="background-color:{color}">{text}</span>'
+
 # Streamlit interface
 st.title("IPA - Document Similarity Checker")
 st.write("Upload two MS Word documents (.docx) to compare their similarity.")
@@ -139,34 +143,44 @@ if file1 and file2:
     st.write(f"Updated Sentences: {updated_percentage:.2f}%")
     st.write(f"Common Sentences: {common_percentage:.2f}%")
 
-    # Create tabs for each section
-    tab1, tab2, tab3, tab4 = st.tabs(["New Sentences", "Deleted Sentences", "Slightly Changed Sentences", "Common Sentences"])
+    # Color legends
+    st.write("### Color Legends:")
+    st.write(f'<span style="color:red">Deleted Sentences</span> | '
+             f'<span style="color:green">New Sentences</span> | '
+             f'<span style="color:gold">Updated Sentences</span>', unsafe_allow_html=True)
 
-    # Tab 1: New sentences
-    with tab1:
-        st.subheader("New Sentences (in second file but not in the first):")
-        st.write("\n".join(new_sentences) if new_sentences else "No new sentences.")
+    # Create two columns for side-by-side comparison
+    col1, col2 = st.columns(2)
 
-    # Tab 2: Deleted sentences
-    with tab2:
-        st.subheader("Deleted Sentences (in first file but not in the second):")
-        st.write("\n".join(deleted_sentences) if deleted_sentences else "No deleted sentences.")
+    # Prepare highlighted texts for both files
+    highlighted_text1 = []
+    highlighted_text2 = []
 
-    # Tab 3: Slightly changed sentences
-    with tab3:
-        st.subheader("Slightly Changed Sentences:")
-        if slightly_changed_sentences:
-            for original, changed in slightly_changed_sentences:
-                st.write(f"Original: {original}")
-                st.write(f"Changed: {changed}")
-                st.write("---")
+    # Highlight sentences in file1 and file2
+    for sent1 in sentences1:
+        if sent1 in deleted_sentences:
+            highlighted_text1.append(highlight_sentence(sent1, "red"))
+        elif any(sent1 == orig for orig, _ in slightly_changed_sentences):
+            highlighted_text1.append(highlight_sentence(sent1, "gold"))
         else:
-            st.write("No slightly changed sentences.")
+            highlighted_text1.append(sent1)
 
-    # Tab 4: Common sentences
-    with tab4:
-        st.subheader("Common Sentences (in both files):")
-        st.write("\n".join(common_sentences) if common_sentences else "No common sentences.")
+    for sent2 in sentences2:
+        if sent2 in new_sentences:
+            highlighted_text2.append(highlight_sentence(sent2, "green"))
+        elif any(sent2 == changed for _, changed in slightly_changed_sentences):
+            highlighted_text2.append(highlight_sentence(sent2, "gold"))
+        else:
+            highlighted_text2.append(sent2)
+
+    # Display file1 on the right and file2 on the left
+    with col1:
+        st.subheader("File 2 (Left)")
+        st.write('<br>'.join(highlighted_text2), unsafe_allow_html=True)
+
+    with col2:
+        st.subheader("File 1 (Right)")
+        st.write('<br>'.join(highlighted_text1), unsafe_allow_html=True)
 
 else:
     st.warning("Please upload both Word files to perform the comparison.")
