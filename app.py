@@ -106,7 +106,7 @@ st.sidebar.header("Settings")
 min_gram = st.sidebar.number_input("Minimum n-gram", min_value=1, max_value=5, value=1)
 max_gram = st.sidebar.number_input("Maximum n-gram", min_value=1, max_value=5, value=3)
 similarity_method = st.sidebar.selectbox(
-    "Select similarity calculation method", ("Cosine", "Manhattan", "Euclidean", "Jaccard"))
+    "Select similarity calculation method", ("Cosine", "Euclidean", "Jaccard"))
 
 # Checkbox to apply or ignore length penalty
 apply_length_penalty = st.sidebar.checkbox("Apply length penalty", value=True)
@@ -139,10 +139,20 @@ if file1 and file2:
     # Compare the sentences
     new_sentences, deleted_sentences, slightly_changed_sentences, common_sentences = compare_sentences(sentences1, sentences2)
 
-    # Highlight sentences for side-by-side comparison
+    # Color legends
+    st.write("### Color Legends:")
+    st.write(f'<span style="color:red">Deleted Sentences</span> | '
+             f'<span style="color:green">New Sentences</span> | '
+             f'<span style="color:gold">Updated Sentences</span>', unsafe_allow_html=True)
+
+    # Create two columns for side-by-side comparison
+    col1, col2 = st.columns(2)
+
+    # Prepare highlighted texts for both files
     highlighted_text1 = []
     highlighted_text2 = []
 
+    # Highlight sentences in file1 and file2
     for sent1 in sentences1:
         if sent1 in deleted_sentences:
             highlighted_text1.append(highlight_sentence(sent1, "red"))
@@ -159,21 +169,14 @@ if file1 and file2:
         else:
             highlighted_text2.append(sent2)
 
-    # Display side-by-side comparison
-    st.write(f"<h4>{file1.name} (Right) | {file2.name} (Left)</h4>", unsafe_allow_html=True)
+    # Display file1 on the right and file2 on the left with dynamic filenames
+    with col1:
+        st.subheader(f"{file2.name} (Left)")
+        st.write('<div style="text-align: left; direction: rtl;">' + '<br>'.join(highlighted_text2) + '</div>', unsafe_allow_html=True)
 
-    # Create a table for horizontal alignment
-    st.write('<table style="width:100%; text-align:right; direction:rtl;">', unsafe_allow_html=True)
+    with col2:
+        st.subheader(f"{file1.name} (Right)")
+        st.write('<div style="text-align: left; direction: rtl;">' + '<br>'.join(highlighted_text1) + '</div>', unsafe_allow_html=True)
 
-    for i in range(max(len(sentences1), len(sentences2))):
-        sent1 = highlighted_text1[i] if i < len(highlighted_text1) else ""
-        sent2 = highlighted_text2[i] if i < len(highlighted_text2) else ""
-
-        st.write(f'''
-            <tr>
-                <td style="padding: 10px;">{sent1}</td>
-                <td style="padding: 10px;">{sent2}</td>
-            </tr>
-        ''', unsafe_allow_html=True)
 
     st.write
