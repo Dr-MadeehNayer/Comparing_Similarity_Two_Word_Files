@@ -79,7 +79,8 @@ def highlight_sentence(text, color):
     return f'<span style="background-color:{color}">{text}</span>'
 
 # Streamlit interface
-st.title("IPA - Document Similarity Checker")
+st.title("IPA AI Use Cases")
+st.title("Tool One: Document Similarity Checker")
 st.write("Upload two MS Word documents (.docx) to compare their similarity.")
 
 # File uploader for two documents
@@ -101,8 +102,8 @@ if file1 and file2:
     text2 = read_docx(file2)
 
     # Display word counts
-    st.write(f"Number of words in file 1: {word_count(text1)}")
-    st.write(f"Number of words in file 2: {word_count(text2)}")
+    st.write(f"Number of words in **{file1.name}**: {word_count(text1)}")
+    st.write(f"Number of words in **{file2.name}**: {word_count(text2)}")
 
     # Calculate similarity with the specified n-gram range and optional length penalty
     similarity_percentage = calculate_similarity(text1, text2, ngram_range=(min_gram, max_gram), apply_length_penalty=apply_length_penalty)
@@ -137,11 +138,11 @@ if file1 and file2:
     common_percentage = (total_common / total_sentences) * 100
 
     # Display the percentages
-    st.subheader("Breakdown of Sentence Changes:")
-    st.write(f"New Sentences: {new_percentage:.2f}%")
-    st.write(f"Deleted Sentences: {deleted_percentage:.2f}%")
-    st.write(f"Updated Sentences: {updated_percentage:.2f}%")
-    st.write(f"Common Sentences: {common_percentage:.2f}%")
+    # st.subheader("Breakdown of Sentence Changes:")
+    # st.write(f"New Sentences: {new_percentage:.2f}%")
+    # st.write(f"Deleted Sentences: {deleted_percentage:.2f}%")
+    # st.write(f"Updated Sentences: {updated_percentage:.2f}%")
+    # st.write(f"Common Sentences: {common_percentage:.2f}%")
 
     # Color legends
     st.write("### Color Legends:")
@@ -173,14 +174,14 @@ if file1 and file2:
         else:
             highlighted_text2.append(sent2)
 
-    # Display file1 on the right and file2 on the left
+    # Display file1 on the right and file2 on the left with dynamic filenames
     with col1:
-        st.subheader("File 2 (Left)")
-        st.write('<br>'.join(highlighted_text2), unsafe_allow_html=True)
+        st.subheader(f"{file2.name} (Left)")
+        st.write('<div style="text-align: left; direction: rtl;">' + '<br>'.join(highlighted_text2) + '</div>', unsafe_allow_html=True)
 
     with col2:
-        st.subheader("File 1 (Right)")
-        st.write('<br>'.join(highlighted_text1), unsafe_allow_html=True)
+        st.subheader(f"{file1.name} (Right)")
+        st.write('<div style="text-align: left; direction: rtl;">' + '<br>'.join(highlighted_text1) + '</div>', unsafe_allow_html=True)
 
 else:
     st.warning("Please upload both Word files to perform the comparison.")
